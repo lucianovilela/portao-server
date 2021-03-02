@@ -1,14 +1,27 @@
 const mongoose = require("../services/db");
+const { v4: uuidv4 } = require("uuid");
+
+const newKey = () => {
+  return uuidv4();
+};
 
 const Portao = mongoose.model(
   "Portao",
   new mongoose.Schema({
     descricao: "string",
-    key: { type: "string", index: true },
+    key: "string",
     status: "string",
     token: "string",
+    infoAberura :"object",
     updated: { type: Date, default: Date.now },
   })
+  .pre('save',  function (next){
+      if(this.status === "fechado"){
+        this.key = newKey();
+        this.infoAberura = {}
+      }
+      next();
+  } )
 );
 
 const User = mongoose.model(

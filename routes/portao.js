@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
-const { Portao } = require("../models");
+const { Portao, User, Historico } = require("../models");
 const {
   isValidTokenUser,
   isValidTokenPortao,
@@ -11,7 +11,7 @@ const {
 router.get("/test", function (req, res) {
   res.send(
     JSON.stringify({
-      datetime: Date.now(),
+      datetime: new Date(),
       msg: "se voce estiver vendo essa mensagem é pq funcionou",
     })
   );
@@ -26,7 +26,7 @@ router.get("/testdb", async (req, res) => {
 router.get("/status/:id", async (req, res) => {
   const token = req.header("token");
   const id = req.params.id;
-  if (!token || !await isValidTokenPortao(id, token)) {
+  if (!token || !(await isValidTokenPortao(id, token))) {
     res.status(504).send({ msg: "portao invalido" });
     return;
   }
@@ -38,23 +38,39 @@ router.get("/status/:id", async (req, res) => {
 
 router.get("/abre/:id", async (req, res) => {
   Portao.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) })
-    .then(async (doc) => {
-      if (doc.key !== req.query.key || doc.status !== "fechado") {
+    .then(async (portao) => {
+      const token = req.header("token");
+      const email = req.query.email;
+      if (!token || !(await isValidTokenUser(email, token))) {
+        res.status(504).send({ msg: "usuario inválido" });
+        return;
+      }
+      if (portao.key !== req.query.key || portao.status !== "fechado") {
         res.status(504).send({ msg: "error" });
         return;
       }
+      const user = await User.findOne({ email: email });
 
-      doc.status = "abrindo";
-      await doc.save();
-      res.send(doc);
+      await new Historico({ portao: portao._id, user: user._id }).save();
+
+      portao.status = "abrindo";
+      await portao.save();
+      res.send(portao);
     })
-    .catch((err) => res.status(504).send({ msg: "error" }));
+    .catch((err) => res.status(504).send({ err: JSON.stringify(err) }));
 });
 
 router.get("/fecha/:id", async (req, res) => {
-  Portao.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) })
+  const token = req.header("token");
+  const id = req.params.id;
+  if (!token || !(await isValidTokenPortao(id, token))) {
+    res.status(504).send({ msg: "portao invalido" });
+    return;
+  }
+
+  Portao.findOne({ _id: new mongoose.Types.ObjectId(id) })
     .then(async (doc) => {
-      if (doc.key !== req.query.key || doc.status !== "abrindo") {
+      if (doc.status !== "abrindo") {
         res.status(504).send({ msg: "error" });
         return;
       }
@@ -65,6 +81,5 @@ router.get("/fecha/:id", async (req, res) => {
     })
     .catch((err) => res.status(504).send({ msg: "error" }));
 });
-
 
 module.exports = router;
