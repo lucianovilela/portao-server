@@ -1,22 +1,32 @@
 const mongoose = require("./db");
 const { User, Portao } = require("../models");
+var admin = require("firebase-admin");
 
-
-const userToken = {};
 const portaoToken = {};
 
 const isValidTokenUser = async (email, token) => {
-  if (userToken[email] === token) {
-    return true;
-  }
-  return await User.findOne({ email: email }).then((user) => {
-    if (user.token === token) {
-      userToken[email] = user.token;
-      return true;
-    }
-    return false;
-  });
-};
+  return admin.auth()
+    .verifyIdToken(token)
+    .then(async (decode) => {
+      if (email !== decode.email) throw new Error("Usuário inválido");
+      let user = await User.findOne({ email: decode.email });
+
+      if (!user) {
+        user = new User({
+          email: decode.email,
+          photo: decode.picture,
+          token: token,
+        });
+        await user.save();
+      } else {
+        user.token = token;
+        await user.save();
+      }
+      return user;
+    })
+    .catch((err) => err);
+}
+
 const isValidTokenPortao = async (id, token) => {
   if (portaoToken[id] === token) {
     //console.log("estava na memoria", id, token);
@@ -31,7 +41,6 @@ const isValidTokenPortao = async (id, token) => {
       return false;
     }
   );
-};
-
+}
 
 module.exports = { isValidTokenUser, isValidTokenPortao };

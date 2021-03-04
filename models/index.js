@@ -30,6 +30,7 @@ const User = mongoose.model(
     nome: "string",
     email: { type: "String", index: true },
     token: "string",
+    photo : "string",
     updated: { type: Date, default: Date.now },
   })
 );

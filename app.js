@@ -6,11 +6,22 @@ var logger = require('morgan');
 var cors = require('cors');
 require('dotenv').config();
 
+
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./portao-eletronico-dev-firebase-adminsdk-8y7r9-7fca14750b.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 var indexRouter = require('./routes/index');
 var portaoRouter = require('./routes/portao');
+var historicoRouter = require('./routes/historico');
+var userRouter = require('./routes/users');
 
 var app = express();
-
+app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -24,8 +35,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/portao', portaoRouter);
+app.use('/hist', historicoRouter);
+app.use('/user', userRouter);
 
-app.use(cors());
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
