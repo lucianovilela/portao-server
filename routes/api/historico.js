@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
-const { Portao, User, Historico } = require("../models");
+const { Portao, User, Historico } = require("../../models");
 const {
   isValidTokenUser,
   isValidTokenPortao,
-} = require("../services/security");
+} = require("../../services/security");
 
 
 router.get("/list/:id", async (req, res) => {
@@ -19,7 +19,6 @@ router.get("/list/:id", async (req, res) => {
 
   Historico.find({ portao: new mongoose.Types.ObjectId(id) }, {}, {limit:3, skip:pg*3})
   .populate("user")
-  .sort("updated" ,-1)
   .then((docs) =>
     res.send(docs)
   );

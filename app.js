@@ -16,9 +16,9 @@ admin.initializeApp({
 });
 
 var indexRouter = require('./routes/index');
-var portaoRouter = require('./routes/portao');
-var historicoRouter = require('./routes/historico');
-var userRouter = require('./routes/users');
+var portaoRouter = require('./routes/api/portao');
+var historicoRouter = require('./routes/api/historico');
+var userRouter = require('./routes/api/users');
 
 var app = express();
 app.use(cors());
@@ -34,9 +34,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/portao', portaoRouter);
-app.use('/hist', historicoRouter);
-app.use('/user', userRouter);
+app.use('/api/portao', portaoRouter);
+app.use('/api/hist', historicoRouter);
+app.use('/api/user', userRouter);
 
 
 

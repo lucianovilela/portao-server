@@ -18,8 +18,9 @@ const Portao = mongoose.model(
   .pre('save',  function (next){
       if(this.status === "fechado"){
         this.key = newKey();
-        this.infoAberura = {}
+        this.infoAberura = {};
       }
+      this.updated = Date.now;
       next();
   } )
 );

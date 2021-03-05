@@ -1,0 +1,52 @@
+extends ../layout
+block header
+    title= pageTitle
+    script(type="text/javascript").
+        let qr; 
+        let timerFechar;
+        function processaReq(obj){
+            if(obj.status ==="fechado"){
+                document.getElementById("qrcode").style="";
+                document.getElementById("informacao").style="display:none";
+
+                qr.makeCode( JSON.stringify({_id:obj._id, key:obj.key}));
+            }else if(obj.status === "abrindo"){
+                document.getElementById("qrcode").style="display:none";
+                document.getElementById("informacao").style="";
+                
+                if(timerFechar==undefined){
+                    timerFechar = setTimeout(async ()=>{
+                        await fetch("/api/portao/fecha/#{_id}", {method:"GET", headers:new Headers({"token":#{token}})});
+                        clearTimeout(timerFechar);
+                        timerFechar = undefined;
+                    }, 10000);
+                }
+
+            }
+            document.getElementById("horario").innerHTML= new Date();
+
+        }
+        function consulta(){
+            fetch("/api/portao/status/#{_id}", {method:"GET", headers:new Headers({"token":#{token}})})
+            .then(result => result.json())
+            .then(result => {
+                   processaReq(result);
+
+            });
+        }
+        window.onload = function onload(){
+            qr = new QRCode(document.getElementById("qrcode"));
+            setInterval(consulta, 3000);
+
+        }
+block content
+    h1 Acessa portão
+    .div_horario(style="boder-botton:10px")
+        #horario
+    
+    .div_inform#informacao(style="display:none").
+        Portao sendo aberto
+    .div_qrcode 
+        #qrcode
+    script(src="/javascripts/qrcode.min.js") 
+        

@@ -1,0 +1,25 @@
+extends ../layout
+block header
+    title= pageTitle
+    script(type="text/javascript"). 
+        window.onload = function onload(){
+            const tabela = document.getElementById("tabela");
+            fetch("/api/portao/list", {method:"GET"})
+            .then(result => result.json())
+            .then(result => {
+                const r = result.reduce((current, obj, index) => ( current + `<tr><td>${index+1}</td>
+                <td>${obj.nome}</td>
+                <td><a href="qrcode/${obj._id}">show qrcode</a></td>
+
+                </tr>` ), "" );
+               console.log(r);
+ 
+                tabela.innerHTML = `<table class="table table-compress"><tbody>${r}</tbody></table>`;
+
+            });
+
+        }
+block content
+    h1 Portões
+    #resultado
+        #tabela

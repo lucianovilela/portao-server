@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
-const { Portao, User, Historico } = require("../models");
+const { Portao, User, Historico } = require("../../models");
 const {
   isValidTokenUser,
   isValidTokenPortao,
-} = require("../services/security");
+} = require("../../services/security");
 
 /* GET home page. */
 router.get("/test", function (req, res) {
@@ -17,10 +17,16 @@ router.get("/test", function (req, res) {
   );
 });
 
-router.get("/testdb", async (req, res) => {
-  const portao = new Portao({ nome: "teste", key: "XXXXXXXXXX" });
+router.get("/list", async (req, res) => {
+  const id = req.params.id;
+  const pg = req.query.pg||0;
 
-  Portao.find({}).then((docs) => res.send(docs));
+  Portao.find({  })
+  .limit(10)
+  .skip(pg*10)
+  .then((docs) =>
+    res.send(docs)
+  );
 });
 
 router.get("/status/:id", async (req, res) => {
@@ -32,7 +38,7 @@ router.get("/status/:id", async (req, res) => {
   }
 
   Portao.findOne({ _id: new mongoose.Types.ObjectId(id) }).then((docs) =>
-    res.send(docs)
+    res.send({...docs._doc, token:undefined})
   );
 });
 
@@ -54,8 +60,9 @@ router.get("/abre/:id", async (req, res) => {
       await new Historico({ portao: portao._id, user: user._id }).save();
 
       portao.status = "abrindo";
+      portao.infoAberura = { user:user.email, date:Date.now()}
       await portao.save();
-      res.send(portao);
+      res.send({...portao._doc, token:undefined});
     })
     .catch((err) => res.status(504).send({ err: JSON.stringify(err) }));
 });
