@@ -9,10 +9,19 @@ require('dotenv').config();
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./portao-eletronico-dev-firebase-adminsdk-8y7r9-7fca14750b.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert({"type": process.env.TYPE_GOOGLE,
+  "project_id": process.env.PROJECT_ID_GOOGLE,
+  "private_key_id": process.env.PRIVATE_KEY_ID_GOOGLE,
+  "private_key": process.env.PRIVATE_KEY_GOOGLE.replace(/\\n/g, "\n"),
+  "client_email": process.env.CLIENT_EMAIL_GOOGLE,
+  "client_id": process.env.CLIENT_ID_GOOGLE,
+  "auth_uri": process.env.AUTH_URI_GOOGLE,
+  "token_uri": process.env.TOKEN_URI_GOOGLE,
+  "auth_provider_x509_cert_url": process.env.AUTH_PROVIDER_X509_CERT_URL_GOOGLE,
+  "client_x509_cert_url": process.env.CLIENT_X509_CERT_URL_GOOGLE,
+})
 });
 
 var indexRouter = require('./routes/index');

@@ -115,3 +115,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 portao-eletronico-dev-firebase-adminsdk-8y7r9-7fca14750b.json
+set.bat
