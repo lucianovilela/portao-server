@@ -6,5 +6,13 @@ html(lang="pt-br")
     rel="stylesheet", integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl", crossorigin="anonymous")
     link(rel='stylesheet', href='/stylesheets/style.css')
     block header
-  body.container
-    block content
+  body
+    .container
+      if ! removeNav
+        include ./nav.jade
+      block content
+  
+      if ! removeNav
+        footer.footer
+          .center
+            um layout de teste - 2021
