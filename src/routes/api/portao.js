@@ -18,9 +18,10 @@ router.get("/test", function (req, res) {
 });
 
 router.get("/list", async (req, res) => {
-  const pg = req.query.pg||0;
 
-  Portao.find({  })
+  const pg = req.query.pg||1;
+
+  Portao.find({  }, {}, {limit:10, skip:pg*10})
   .limit(10)
   .skip(pg*10)
   .then((docs) =>
