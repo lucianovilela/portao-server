@@ -67,6 +67,11 @@ router.get("/abre/:id", async (req, res) => {
     .catch((err) => res.status(504).send({ err: JSON.stringify(err) }));
 });
 
+router.put("/add", async(req, res)=>{
+  res.status(200).send(new Portao({descricao:"teste", status:"fechado"}).save());
+});
+
+
 router.get("/fecha/:id", async (req, res) => {
   const token = req.header("token");
   const id = req.params.id;
