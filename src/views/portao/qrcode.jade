@@ -16,7 +16,7 @@ block header
                 
                 if(timerFechar==undefined){
                     timerFechar = setTimeout(async ()=>{
-                        await fetch("/api/portao/fecha/#{_id}", {method:"GET", headers:new Headers({"token":#{token}})});
+                        await fetch("/api/portao/fecha/#{_id}", {method:"GET", headers:new Headers({"token":"#{token}"})});
                         clearTimeout(timerFechar);
                         timerFechar = undefined;
                     }, 10000);
