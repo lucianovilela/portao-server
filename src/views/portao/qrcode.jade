@@ -27,7 +27,7 @@ block header
 
         }
         function consulta(){
-            fetch("/api/portao/status/#{_id}", {method:"GET", headers:new Headers({"token":#{token}})})
+            fetch("/api/portao/status/#{_id}", {method:"GET", headers:new Headers({"token":"#{token}"})})
             .then(result => result.json())
             .then(result => {
                    processaReq(result);

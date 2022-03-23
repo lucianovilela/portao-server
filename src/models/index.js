@@ -10,7 +10,7 @@ const Portao = mongoose.model(
   new mongoose.Schema({
     descricao: "string",
     key: "string",
-    status: "string",
+    status: { type: String, default: "fechado" },
     token: "string",
     infoAberura :"object",
     updated: { type: Date, default: Date.now },

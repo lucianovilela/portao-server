@@ -24,7 +24,7 @@ const isValidTokenUser = async (email, token) => {
       }
       return user;
     })
-    .catch((err) => err);
+    .catch((err) => {console.log(err); return err;});
 }
 
 const isValidTokenPortao = async (id, token) => {
